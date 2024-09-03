@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const User_1 = __importDefault(require("../models/User"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const crypto_1 = __importDefault(require("crypto"));
 class DB {
     constructor() {
         /* connect to the database */
@@ -42,6 +43,9 @@ class DB {
             const saltRounds = 10;
             const hashedPw = yield bcrypt_1.default.hash(reqBody.password, saltRounds);
             reqBody.password = hashedPw;
+            // Generate verification code
+            const verificationCode = crypto_1.default.randomInt(100000, 999999).toString();
+            reqBody.verificationCode = verificationCode;
             return new User_1.default(reqBody);
         });
     }

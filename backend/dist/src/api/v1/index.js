@@ -13,10 +13,10 @@ const PORT = 3000;
 exports.db = new db_1.default();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-app.use("/api/v1/", users_1.default);
-app.get('/', (req, res) => {
-    res.send("Welcome to Fashionova server.");
-});
+app.use('/', users_1.default);
+// app.get('/', (req, res) => {
+//     res.send("Welcome to Fashionova server.");
+// });
 app.listen(PORT, () => {
     console.log(`app is running on port ${PORT} ...`);
 });

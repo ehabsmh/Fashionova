@@ -8,6 +8,6 @@
     "skipLibCheck": true,               /* Skip type checking of all declaration files (.d.ts). */
     "forceConsistentCasingInFileNames": true /* Ensure consistent casing in file names. */
   },
-  "include": ["src/**/*.ts"],             /* Include all TypeScript files in the 'src' directory. */
+  "include": ["src/**/*.ts", "src/**/**/*.ts"],             /* Include all TypeScript files in the 'src' directory. */
   "exclude": ["node_modules"]            /* Exclude 'node_modules' from being compiled. */
 }
