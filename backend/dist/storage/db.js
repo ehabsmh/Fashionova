@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const User_1 = __importDefault(require("../models/User"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const user_1 = require("../utils/user");
 class DB {
     constructor() {
         /* connect to the database */
@@ -38,10 +39,14 @@ class DB {
                 const [yyyy, mm, dd] = reqBody.birthDate.split('-');
                 reqBody.birthDate = new Date(Number(yyyy), Number(mm), Number(dd));
             }
-            // Hash password
+            // Password hashing
             const saltRounds = 10;
             const hashedPw = yield bcrypt_1.default.hash(reqBody.password, saltRounds);
             reqBody.password = hashedPw;
+            // add country code to the phone number
+            const { countryCode, phoneNo1, phoneNo2 } = reqBody;
+            reqBody.phoneNo1 = (0, user_1.addCountryCode)(countryCode, phoneNo1);
+            reqBody.phoneNo2 = phoneNo2 ? (0, user_1.addCountryCode)(countryCode, phoneNo2) : undefined;
             return new User_1.default(reqBody);
         });
     }

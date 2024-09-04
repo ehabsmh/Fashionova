@@ -17,13 +17,17 @@ const UserSchema = new mongoose_1.Schema({
     city: { type: String, required: true },
     zipCode: { type: Number, required: true },
     address: { type: String, required: true },
-    phone1: { type: Number, required: true },
-    phone2: { type: Number },
+    countryCode: { type: String, required: true },
+    phoneNo1: { type: String, required: true },
+    phoneNo2: { type: String },
     image: { type: String, default: "no image" },
     verificationCode: { type: String, default: crypto_1.default.randomInt(100000, 999999).toString() },
     cart: [{ type: mongoose_1.Types.ObjectId, ref: "cartItem" }]
 }, { timestamps: true });
 UserSchema.virtual('name').get(function () {
+    return `${this.firstName} ${this.lastName}`;
+});
+UserSchema.virtual('').get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
 const User = (0, mongoose_1.model)('User', UserSchema);

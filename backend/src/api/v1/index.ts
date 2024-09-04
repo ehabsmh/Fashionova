@@ -4,8 +4,8 @@ import DB from "../../storage/db";
 import userRouter from "./views/users";
 
 const app = express();
-const PORT = 3000;
 export const db = new DB();
+const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 app.use("/api/v1/", userRouter);

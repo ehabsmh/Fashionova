@@ -5,9 +5,10 @@ export default interface User {
     password: string,
     role?: string,
     birthDate: string | Date,
-    address: String,
-    phone1: number,
-    phone2?: number,
+    address: string,
+    countryCode: string,
+    phoneNo1: string,
+    phoneNo2?: string,
     image?: string,
     verificationCode: string,
 }

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import UserInterface from '../interfaces/User';
 import User from "../models/User";
 import bcrypt from "bcrypt";
-import crypto from "crypto";
+import { addCountryCode } from "../utils/user";
 
 class DB {
   constructor() {
@@ -28,10 +28,15 @@ class DB {
       reqBody.birthDate = new Date(Number(yyyy), Number(mm), Number(dd));
     }
 
-    // Hash password
+    // Password hashing
     const saltRounds = 10;
     const hashedPw = await bcrypt.hash(reqBody.password, saltRounds);
     reqBody.password = hashedPw;
+
+    // add country code to the phone number
+    const { countryCode, phoneNo1, phoneNo2 } = reqBody;
+    reqBody.phoneNo1 = addCountryCode(countryCode, phoneNo1);
+    reqBody.phoneNo2 = phoneNo2 ? addCountryCode(countryCode, phoneNo2) : undefined;
 
     return new User(reqBody);
   }
