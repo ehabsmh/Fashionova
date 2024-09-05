@@ -6,9 +6,11 @@ export default interface User {
     role?: string,
     birthDate: string | Date,
     address: string,
+    country: string,
+    city: string,
     countryCode: string,
+    zipCode: Number,
     phoneNo1: string,
     phoneNo2?: string,
     image?: string,
-    verificationCode: string,
 }

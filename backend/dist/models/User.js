@@ -17,17 +17,20 @@ const UserSchema = new mongoose_1.Schema({
     city: { type: String, required: true },
     zipCode: { type: Number, required: true },
     address: { type: String, required: true },
-    countryCode: { type: String, required: true },
+    countryCode: { type: String, required: true, default: "+20" },
     phoneNo1: { type: String, required: true },
     phoneNo2: { type: String },
     image: { type: String, default: "no image" },
     verificationCode: { type: String, default: crypto_1.default.randomInt(100000, 999999).toString() },
+    verificationCodeExpire: { type: Number, default: Date.now() + 30 * 60 * 1000 },
     cart: [{ type: mongoose_1.Types.ObjectId, ref: "cartItem" }]
-}, { timestamps: true });
-UserSchema.virtual('name').get(function () {
-    return `${this.firstName} ${this.lastName}`;
+}, {
+    timestamps: true
 });
-UserSchema.virtual('').get(function () {
+UserSchema.methods.isVerificationCodeExpired = function () {
+    return Date.now() > this.verificationCodeExpire;
+};
+UserSchema.virtual('fullName').get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
 const User = (0, mongoose_1.model)('User', UserSchema);
