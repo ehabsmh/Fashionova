@@ -10,4 +10,5 @@ const subcategoryRouter = express_1.default.Router();
 subcategoryRouter.post('/subcategory/add', auth_1.adminAuth, Subcategory_1.default.add);
 subcategoryRouter.put('/subcategory/edit/:subcategoryId', auth_1.adminAuth, Subcategory_1.default.edit);
 subcategoryRouter.delete('/subcategory/delete/:subcategoryId', auth_1.adminAuth, Subcategory_1.default.delete);
+subcategoryRouter.get('/subcategory/getByCategory/', Subcategory_1.default.getByCategory);
 exports.default = subcategoryRouter;
