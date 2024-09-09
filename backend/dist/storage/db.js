@@ -16,6 +16,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const User_1 = __importDefault(require("../models/User"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const user_1 = require("../utils/user");
+const ErrorHandler_1 = __importDefault(require("../utils/ErrorHandler"));
 class DB {
     constructor() {
         /* connect to the database */
@@ -29,11 +30,11 @@ class DB {
     createUser(reqBody) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!reqBody)
-                throw new Error("Request body is empty.");
+                throw new ErrorHandler_1.default("Request body is empty.", 401);
             // Check user existence
             const isExist = yield User_1.default.findOne({ email: reqBody.email });
             if (isExist)
-                throw new Error("Email already exists.");
+                throw new ErrorHandler_1.default("Email already exists.", 409);
             // Change the date string format to date type.
             if (typeof reqBody.birthDate === 'string') {
                 const [yyyy, mm, dd] = reqBody.birthDate.split('-');

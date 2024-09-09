@@ -5,6 +5,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
+import ErrorHandler from '../../../utils/ErrorHandler';
 
 
 class UserController {
@@ -18,8 +19,18 @@ class UserController {
       await newUser.save();
       res.status(201).json({ message: "User created successfully.", newUser })
     } catch (e) {
+      if (e instanceof ErrorHandler && e.name === "ErrorHandler") {
+        /**
+         * if e instance of Error it will not match the condition
+         * if e instance of ErrorHandler it will match both constructors.
+         */
+
+        return res.status(e.statusCode).json({ error: e.message });
+
+      }
+
       if (e instanceof Error)
-        res.status(400).json({ error: e.message })
+        res.status(500).json({ error: e.message })
     }
   }
 
@@ -30,14 +41,16 @@ class UserController {
     try {
       // Get user
       const user = await User.findOne({ email });
-      if (!user) throw new Error("404 User not found.");
+      if (!user) throw new ErrorHandler("User not found.", 404);
 
-      if (user.verified) throw new Error("400 User already verified.");
+      if (user.verified) throw new ErrorHandler("User already verified.", 400);
 
       // Check if verification code is valid.
       if (verificationCode === user.verificationCode) {
         // Check if the verification code has been expired.
-        if (user.isVerificationCodeExpired()) throw new Error("400 The verification code has been expired.");
+        if (user.isVerificationCodeExpired()) {
+          throw new ErrorHandler("The verification code has been expired.", 400);
+        }
 
         await user.updateOne({ verified: true });
 
@@ -46,19 +59,22 @@ class UserController {
         user.verificationCodeExpire = undefined;
         await user.save();
 
-        if (!process.env.SECRET_KEY) throw new Error("500 Secret key is not defined.")
-        const token = jwt.sign({ user }, process.env.SECRET_KEY);
+        if (!process.env.SECRET_KEY) throw new Error("Secret key is not defined.");
+
+        const token = jwt.sign({ user: user.toJSON() }, process.env.SECRET_KEY);
 
         res.json({ message: "Verified successfully.", token });
       } else {
-        throw new Error("400 Incorrect code.");
+        throw new ErrorHandler("Incorrect code.", 400);
       }
 
-    } catch (error) {
-      if (error instanceof Error) {
-        const [statusCode, ...message] = error.message.split(' ');
-        res.status(+statusCode).json({ message: message.join(' ') });
+    } catch (e) {
+      if (e instanceof ErrorHandler && e.name === "ErrorHandler") {
+        return res.status(e.statusCode).json({ error: e.message });
       }
+
+      if (e instanceof Error)
+        res.status(500).json({ error: e.message })
     }
   }
 
@@ -67,8 +83,8 @@ class UserController {
     const { email } = req.body;
     try {
       const user = await User.findOne({ email });
-      if (!user) throw new Error("404 User not found.");
-      if (user.verified) throw new Error("400 User already verified");
+      if (!user) throw new ErrorHandler("User not found.", 404);
+      if (user.verified) throw new ErrorHandler("User already verified", 400);
 
       // Set a new verification code and expiration date
       user.verificationCode = crypto.randomInt(100000, 999999).toString();
@@ -78,11 +94,13 @@ class UserController {
       await sendVerificationCode(user);
 
       res.json({ message: "Verification code has been resent to your email." })
-    } catch (error) {
-      if (error instanceof Error) {
-        const [statusCode, ...message] = error.message.split(' ');
-        res.status(+statusCode).json({ message: message.join(' ') });
+    } catch (e) {
+      if (e instanceof ErrorHandler && e.name === "ErrorHandler") {
+        return res.status(e.statusCode).json({ error: e.message });
       }
+
+      if (e instanceof Error)
+        res.status(500).json({ error: e.message })
     }
   }
 
@@ -90,15 +108,15 @@ class UserController {
     const { email, password } = req.body;
 
     try {
-      if (!email) throw new Error("400 email field is required.");
-      if (!password) throw new Error("400 password field is required.");
+      if (!email) throw new ErrorHandler("email field is required.", 400);
+      if (!password) throw new ErrorHandler("password field is required.", 400);
 
       const user = await User.findOne({ email });
-      if (!user) throw new Error("401 Incorrect email or password.");
+      if (!user) throw new ErrorHandler("Incorrect email or password.", 401);
 
       // Comparing original password with the hashed password.
       const isMatching = await bcrypt.compare(password, user.password);
-      if (!isMatching) throw new Error("401 Incorrect email or password.");
+      if (!isMatching) throw new ErrorHandler("Incorrect email or password.", 401);
 
       // Check if the user has verified his account.
       if (user && isMatching && !user.verified) {
@@ -114,15 +132,17 @@ class UserController {
         })
       };
 
-      if (!process.env.SECRET_KEY) throw new Error("500 Secret key is not defined.");
-      const token = jwt.sign({ user }, process.env.SECRET_KEY);
+      if (!process.env.SECRET_KEY) throw new Error("Secret key is not defined.");
+      const token = jwt.sign({ user: user.toJSON() }, process.env.SECRET_KEY);
 
       res.json({ message: `Welcome ${user.fullName}`, token });
-    } catch (error) {
-      if (error instanceof Error) {
-        const [statusCode, ...message] = error.message.split(' ');
-        res.status(+statusCode).json({ message: message.join(' ') });
+    } catch (e) {
+      if (e instanceof ErrorHandler && e.name === "ErrorHandler") {
+        return res.status(e.statusCode).json({ error: e.message });
       }
+
+      if (e instanceof Error)
+        res.status(500).json({ error: e.message })
     }
   }
 }

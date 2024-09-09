@@ -9,12 +9,15 @@ require("dotenv/config");
 const cors_1 = __importDefault(require("cors"));
 const db_1 = __importDefault(require("../../storage/db"));
 const users_1 = __importDefault(require("./views/users"));
+const categories_1 = __importDefault(require("./views/categories"));
+const auth_1 = require("./middlewares/auth");
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
 exports.db = new db_1.default();
 const PORT = Number(process.env.SERVER_PORT) || 3000;
 app.use((0, cors_1.default)());
-app.use(express_1.default.json());
 app.use("/api/v1/", users_1.default);
+app.use("/api/v1/", auth_1.auth, categories_1.default);
 app.get('/', (req, res) => {
     res.send("Welcome to Fashionova server.");
 });

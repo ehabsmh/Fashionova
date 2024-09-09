@@ -3,6 +3,7 @@ import UserInterface from '../interfaces/User';
 import User from "../models/User";
 import bcrypt from "bcrypt";
 import { addCountryCode } from "../utils/user";
+import ErrorHandler from "../utils/ErrorHandler";
 
 class DB {
   constructor() {
@@ -16,11 +17,11 @@ class DB {
   }
 
   async createUser(reqBody: UserInterface) {
-    if (!reqBody) throw new Error("Request body is empty.");
+    if (!reqBody) throw new ErrorHandler("Request body is empty.", 401);
 
     // Check user existence
     const isExist = await User.findOne({ email: reqBody.email });
-    if (isExist) throw new Error("Email already exists.");
+    if (isExist) throw new ErrorHandler("Email already exists.", 409);
 
     // Change the date string format to date type.
     if (typeof reqBody.birthDate === 'string') {
