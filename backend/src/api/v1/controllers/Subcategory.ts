@@ -45,7 +45,26 @@ class SubcategoryController {
     }
   }
   static async delete(req: Request, res: Response) {
+    const { subcategoryId } = req.params;
 
+    try {
+      await Subcategory.deleteOne({ _id: subcategoryId });
+      res.status(201).json({ message: 'Subcategory deleted.' });
+    } catch (e) {
+      if (e instanceof Error)
+        res.status(500).json({ error: e.message })
+    }
+  }
+  static async getByCategory(req: Request, res: Response) {
+    const { subcategoryId } = req.params;
+
+    try {
+      await Subcategory.deleteOne({ _id: subcategoryId });
+      res.status(201).json({ message: 'Subcategory deleted.' });
+    } catch (e) {
+      if (e instanceof Error)
+        res.status(500).json({ error: e.message })
+    }
   }
 }
 

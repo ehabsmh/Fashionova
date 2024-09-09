@@ -59,6 +59,28 @@ class SubcategoryController {
     }
     static delete(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const { subcategoryId } = req.params;
+            try {
+                yield Subcategory_1.default.deleteOne({ _id: subcategoryId });
+                res.status(201).json({ message: 'Subcategory deleted.' });
+            }
+            catch (e) {
+                if (e instanceof Error)
+                    res.status(500).json({ error: e.message });
+            }
+        });
+    }
+    static getByCategory(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { subcategoryId } = req.params;
+            try {
+                yield Subcategory_1.default.deleteOne({ _id: subcategoryId });
+                res.status(201).json({ message: 'Subcategory deleted.' });
+            }
+            catch (e) {
+                if (e instanceof Error)
+                    res.status(500).json({ error: e.message });
+            }
         });
     }
 }
