@@ -7,9 +7,7 @@ exports.SubcategorySchema = new mongoose_1.Schema({
     name: { type: String, required: true, trim: true, lowercase: true },
     slug: {
         type: String, required: true, trim: true, lowercase: true,
-        set: (v) => {
-            v.replace(/\s+/g, "-").replace(/[^A-Za-z0-9]+/g, '-').replace(/[^A-Za-z0-9]+$/g, '');
-        }
+        set: (v) => v.replace(/\s+/g, "-").replace(/[^A-Za-z0-9]+/g, '-').replace(/[^A-Za-z0-9]+$/g, '')
     },
 }, { timestamps: true });
 const Subcategory = (0, mongoose_1.model)('Subcategory', exports.SubcategorySchema);
