@@ -24,9 +24,13 @@ class SubcategoryController {
                 const category = yield Category_1.default.findById(categoryId);
                 if (!category)
                     throw new ErrorHandler_1.default("Category not found.", 404);
+                // Check subcategory existence by checking the category id and the category name, means duplicated entry.
+                const subcategory = yield Subcategory_1.default.findOne({ categoryId, name });
+                if (subcategory)
+                    throw new ErrorHandler_1.default("Subcategory already exists.", 400);
                 // Create new subcategory.
                 const newSubcategory = yield Subcategory_1.default.create({ categoryId, name, slug: name });
-                res.status(201).json({ message: "New subcategory created.", newSubcategory });
+                res.status(201).json({ message: `New subcategory created for ${category.sex}.`, newSubcategory });
             }
             catch (e) {
                 if (e instanceof ErrorHandler_1.default && e.name === "ErrorHandler")
@@ -72,12 +76,25 @@ class SubcategoryController {
     }
     static getByCategory(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { subcategoryId } = req.params;
+            const { category, sex } = req.query;
             try {
-                yield Subcategory_1.default.deleteOne({ _id: subcategoryId });
-                res.status(201).json({ message: 'Subcategory deleted.' });
+                if (!category && !sex)
+                    throw new ErrorHandler_1.default("category and sex query params are required", 400);
+                if (!category)
+                    throw new ErrorHandler_1.default("category query param is required", 400);
+                if (!sex)
+                    throw new ErrorHandler_1.default("sex query param is required", 400);
+                const isFound = yield Category_1.default.findOne({ slug: category, sex });
+                if (!isFound)
+                    throw new ErrorHandler_1.default("Category not found.", 404);
+                const subcategories = yield Subcategory_1.default.find({ categoryId: isFound._id });
+                if (!subcategories.length)
+                    return res.status(404).json({ subcategories });
+                res.json({ subcategories });
             }
             catch (e) {
+                if (e instanceof ErrorHandler_1.default && e.name === "ErrorHandler")
+                    return res.status(e.statusCode).json({ error: e.message });
                 if (e instanceof Error)
                     res.status(500).json({ error: e.message });
             }
