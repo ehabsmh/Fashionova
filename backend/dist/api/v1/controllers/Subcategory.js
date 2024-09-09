@@ -20,19 +20,45 @@ class SubcategoryController {
         return __awaiter(this, void 0, void 0, function* () {
             const { name, categoryId } = req.body;
             try {
+                // Check category existence.
                 const category = yield Category_1.default.findById(categoryId);
                 if (!category)
                     throw new ErrorHandler_1.default("Category not found.", 404);
-                const newSubcategory = yield Subcategory_1.default.create({ name: name.toLowerCase(), slug: name, categoryId });
+                // Create new subcategory.
+                const newSubcategory = yield Subcategory_1.default.create({ categoryId, name, slug: name });
                 res.status(201).json({ message: "New subcategory created.", newSubcategory });
             }
             catch (e) {
-                if (e instanceof ErrorHandler_1.default && e.name === "ErrorHandler") {
+                if (e instanceof ErrorHandler_1.default && e.name === "ErrorHandler")
                     return res.status(e.statusCode).json({ error: e.message });
-                }
                 if (e instanceof Error)
                     res.status(500).json({ error: e.message });
             }
+        });
+    }
+    static edit(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { name, categoryId } = req.body;
+            const { subcategoryId } = req.params;
+            try {
+                // Check category existence.
+                const category = yield Category_1.default.findById(categoryId);
+                if (!category)
+                    throw new ErrorHandler_1.default("Category not found.", 404);
+                // Update subcategory.
+                const newSubcategory = yield Subcategory_1.default.findByIdAndUpdate(subcategoryId, { categoryId, name, slug: name });
+                res.status(201).json({ message: `${newSubcategory === null || newSubcategory === void 0 ? void 0 : newSubcategory.name} updated.` });
+            }
+            catch (e) {
+                if (e instanceof ErrorHandler_1.default && e.name === "ErrorHandler")
+                    return res.status(e.statusCode).json({ error: e.message });
+                if (e instanceof Error)
+                    res.status(500).json({ error: e.message });
+            }
+        });
+    }
+    static delete(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
         });
     }
 }
