@@ -1,4 +1,6 @@
 import { Schema, model } from "mongoose";
+import Subcategory from "./Subcategory";
+import { NextFunction } from "express";
 
 const CategorySchema = new Schema({
   name: { type: String, required: true, trim: true, lowercase: true },
@@ -12,6 +14,15 @@ const CategorySchema = new Schema({
   },
   sex: { type: String, enum: ['male', 'female'], required: true },
 }, { timestamps: true })
+
+CategorySchema.pre("deleteOne", { document: true, query: false }, async function (next: NextFunction) {
+  try {
+    await Subcategory.deleteMany({ categoryId: this._id });
+    next();
+  } catch (e) {
+    next(e);
+  }
+})
 
 const Category = model('Category', CategorySchema);
 
