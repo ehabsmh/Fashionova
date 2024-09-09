@@ -1,12 +1,8 @@
-import { Document, Schema, Types, model } from "mongoose";
-
-// interface ProductDocument extends Document {
-
-// }
+import { Schema, Types, model } from "mongoose";
 
 export const SubcategorySchema = new Schema({
     categoryId: { type: Types.ObjectId, required: true, ref: "Category" },
-    name: { type: String, required: true },
+    name: { type: String, required: true, trim: true, lowercase: true },
     slug: {
         type: String, required: true, trim: true, lowercase: true,
         set: (v: string) => {
@@ -15,5 +11,5 @@ export const SubcategorySchema = new Schema({
     },
 }, { timestamps: true })
 
-
-
+const Subcategory = model('Subcategory', SubcategorySchema);
+export default Subcategory;

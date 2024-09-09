@@ -120,7 +120,7 @@ export default class CategoryController {
     }
   }
 
-  static async getBySex(req: Request, res: Response) {
+  static async getAllBySex(req: Request, res: Response) {
     const { sex } = req.query;
     try {
       const categories = await Category.find({ sex });

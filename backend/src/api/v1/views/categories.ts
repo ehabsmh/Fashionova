@@ -7,5 +7,5 @@ const categoryRouter = express.Router();
 categoryRouter.post('/category/add', adminAuth, upload.single('image'), CategoryController.add);
 categoryRouter.put('/category/edit/:id', adminAuth, upload.single('image'), CategoryController.edit);
 categoryRouter.delete('/category/delete/:id', adminAuth, CategoryController.delete);
-categoryRouter.get('/category/', CategoryController.getBySex);
+categoryRouter.get('/category/', CategoryController.getAllBySex);
 export default categoryRouter;

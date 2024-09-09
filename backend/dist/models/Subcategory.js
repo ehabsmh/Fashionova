@@ -2,11 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubcategorySchema = void 0;
 const mongoose_1 = require("mongoose");
-// interface ProductDocument extends Document {
-// }
 exports.SubcategorySchema = new mongoose_1.Schema({
     categoryId: { type: mongoose_1.Types.ObjectId, required: true, ref: "Category" },
-    name: { type: String, required: true },
+    name: { type: String, required: true, trim: true, lowercase: true },
     slug: {
         type: String, required: true, trim: true, lowercase: true,
         set: (v) => {
@@ -14,3 +12,4 @@ exports.SubcategorySchema = new mongoose_1.Schema({
         }
     },
 }, { timestamps: true });
+const Subcategory = (0, mongoose_1.model)('Subcategory', exports.SubcategorySchema);
