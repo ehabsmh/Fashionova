@@ -51,5 +51,15 @@ class DB {
             return new User_1.default(reqBody);
         });
     }
+    checkVariantsColorUniqueness(variants) {
+        if (!variants.length)
+            throw new ErrorHandler_1.default("Variants cannot be empty.", 400);
+        variants.forEach((variant, i) => {
+            const colors = variants.slice(i + 1).filter((v) => variant.color.toLowerCase() === v.color.toLowerCase());
+            if (colors.length >= 1)
+                throw new ErrorHandler_1.default(`Color ${variant.color} is duplicated.`, 409);
+        });
+        return true;
+    }
 }
 exports.default = DB;

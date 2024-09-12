@@ -1,9 +1,11 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import UserInterface from '../interfaces/User';
 import User from "../models/User";
 import bcrypt from "bcrypt";
 import { addCountryCode } from "../utils/user";
 import ErrorHandler from "../utils/ErrorHandler";
+import { VariantSchema } from "../models/Product";
+import { VariantInterface } from "../interfaces/Product";
 
 class DB {
   constructor() {
@@ -41,6 +43,27 @@ class DB {
 
     return new User(reqBody);
   }
+
+  checkVariantsColorUniqueness(variants: VariantInterface[] | any) {
+    if (!variants.length) throw new ErrorHandler("Variants cannot be empty.", 400);
+    variants.forEach((variant: VariantInterface, i: number) => {
+      const colors = variants.slice(i + 1).filter((v: VariantInterface) => variant.color.toLowerCase() === v.color.toLowerCase());
+
+      if (colors.length >= 1) throw new ErrorHandler(`Color ${variant.color} is duplicated.`, 409);
+
+    });
+
+    return true;
+  }
+
+
+  // async addVariants(variants: typeof VariantSchema[], productId: Types.ObjectId) {
+  //   if (!variants.length) throw new ErrorHandler("Variants cannot be empty.", 400);
+
+  //   variants.forEach(async (variant) => {
+  //     await Variant.create({ productId, ...variant });
+  //   })
+  // }
 }
 
 export default DB;
