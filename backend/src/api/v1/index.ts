@@ -6,6 +6,7 @@ import userRouter from "./views/users";
 import categoryRouter from "./views/categories";
 import { auth } from './middlewares/auth';
 import subcategoryRouter from "./views/subcategories";
+import productsRouter from "./views/products";
 
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(cors());
 app.use("/api/v1/", userRouter);
 app.use("/api/v1/", auth, categoryRouter);
 app.use("/api/v1/", auth, subcategoryRouter);
+app.use("/api/v1/", auth, productsRouter);
 
 app.get('/', (req, res) => {
     res.send("Welcome to Fashionova server.");
