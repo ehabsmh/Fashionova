@@ -3,12 +3,13 @@ import ErrorHandler from "../utils/ErrorHandler";
 import Product from "./Product";
 
 interface ICartItem {
-    productId: Types.ObjectId,
+    productId: Types.ObjectId;
     variant: {
         color: string;
         size: string;
     };
-    quantity: number
+    quantity: number;
+    price: number;
 }
 
 const CartItemSchema = new Schema<ICartItem>({
@@ -18,6 +19,7 @@ const CartItemSchema = new Schema<ICartItem>({
         size: { type: String }
     },
     quantity: { type: Number, required: true },
+    price: { type: Number, default: 0 }
 });
 
 CartItemSchema.pre("save", async function (next) {
@@ -31,6 +33,12 @@ CartItemSchema.pre("save", async function (next) {
     const size = variant.sizes.find((size) => size.size === cartItem.variant.size);
     if (!size) throw new ErrorHandler("Size not found.", 404);
     if (size.quantity < cartItem.quantity) throw new ErrorHandler("Not enough quantity.", 400);
+
+    if (size.discountPrice < size.price) {
+        this.price = size.discountPrice * this.quantity;
+    } else {
+        this.price = size.price * this.quantity;
+    }
 
     next();
 });
