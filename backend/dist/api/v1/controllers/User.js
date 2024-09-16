@@ -19,6 +19,7 @@ const crypto_1 = __importDefault(require("crypto"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const ErrorHandler_1 = __importDefault(require("../../../utils/ErrorHandler"));
+const CartItem_1 = __importDefault(require("../../../models/CartItem"));
 class UserController {
     static register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -146,6 +147,53 @@ class UserController {
                 }
                 if (e instanceof Error)
                     res.status(500).json({ error: e.message });
+            }
+        });
+    }
+    static addToCart(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { productId, variant, quantity } = req.body;
+                const user = req.user;
+                if (!quantity)
+                    throw new ErrorHandler_1.default("Add item's quantity.", 400);
+                if (!('color' in variant) && !('size' in variant)) {
+                    throw new ErrorHandler_1.default("Variant must have color and size.", 400);
+                }
+                const cartItem = yield CartItem_1.default.create({ productId, variant, quantity });
+                yield User_1.default.findByIdAndUpdate(user._id, { $push: { cart: cartItem } });
+                res.json({ message: "Item added to cart.", cartItem });
+            }
+            catch (e) {
+                if (e instanceof ErrorHandler_1.default && e.name === "ErrorHandler") {
+                    return res.status(e.statusCode).json({ error: e.message });
+                }
+                if (e instanceof Error)
+                    res.status(500).json({ error: e.message });
+            }
+        });
+    }
+    static deleteFromCart(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { cartItemId } = req.params;
+            const userId = req.user._id;
+            try {
+                const user = yield User_1.default.findById(userId);
+                if (!user)
+                    throw new ErrorHandler_1.default("User not found.", 404);
+                const cartItem = user.cart.find((cartItem) => cartItem._id.toString() === cartItemId);
+                if (!cartItem)
+                    throw new ErrorHandler_1.default("Item not found in the cart.", 404);
+                yield CartItem_1.default.findByIdAndDelete(cartItem._id);
+                yield (user === null || user === void 0 ? void 0 : user.updateOne({ $pull: { cart: cartItem._id } }));
+                res.json({ message: "Item deleted from cart." });
+            }
+            catch (e) {
+                if (e instanceof ErrorHandler_1.default && e.name === "ErrorHandler") {
+                    return res.status(e.statusCode).json({ error: e.message });
+                }
+                if (e instanceof Error)
+                    return res.status(500).json({ error: e.message });
             }
         });
     }

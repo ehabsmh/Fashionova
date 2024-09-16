@@ -25,7 +25,7 @@ class ProductController {
 
       // Create new product without images first
       const newProduct = new Product({
-        name, shortDesc, longDesc, categoryId,
+        name, slug: name, shortDesc, longDesc, categoryId,
         subcategoryId, variants, sex
       });
 
@@ -182,6 +182,33 @@ class ProductController {
       if (e instanceof Error)
         res.status(500).json({ error: e.message })
     }
+  }
+
+  static async all(req: Request, res: Response) {
+    const products = await Product.find();
+    if (!products.length) res.status(404);
+
+    res.json({ products });
+  }
+
+  static async by(req: Request, res: Response) {
+    const { sex, category, subcategory } = req.query;
+    let products = null;
+    if (sex && !category && !subcategory) products = await Product.find({ sex });
+    if (sex && category && !subcategory) products = await Product.find({ sex, categoryId: category });
+    if (sex && category && subcategory) products = await Product.find({ sex, categoryId: category, subcategoryId: subcategory });
+    if (!products?.length) res.status(404);
+
+    res.json({ products });
+  }
+
+  static async bySlug(req: Request, res: Response) {
+    const { slug } = req.params;
+
+    const product = await Product.findOne({ slug });
+    if (!product) return res.status(404).json({ error: "Product not found." });
+
+    res.json({ product });
   }
 }
 

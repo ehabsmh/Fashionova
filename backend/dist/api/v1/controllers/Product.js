@@ -30,7 +30,7 @@ class ProductController {
                     throw new ErrorHandler_1.default("Product already exists.", 409);
                 // Create new product without images first
                 const newProduct = new Product_1.default({
-                    name, shortDesc, longDesc, categoryId,
+                    name, slug: name, shortDesc, longDesc, categoryId,
                     subcategoryId, variants, sex
                 });
                 // Check variant color uniqueness
@@ -170,6 +170,38 @@ class ProductController {
                 if (e instanceof Error)
                     res.status(500).json({ error: e.message });
             }
+        });
+    }
+    static all(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const products = yield Product_1.default.find();
+            if (!products.length)
+                res.status(404);
+            res.json({ products });
+        });
+    }
+    static by(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { sex, category, subcategory } = req.query;
+            let products = null;
+            if (sex && !category && !subcategory)
+                products = yield Product_1.default.find({ sex });
+            if (sex && category && !subcategory)
+                products = yield Product_1.default.find({ sex, categoryId: category });
+            if (sex && category && subcategory)
+                products = yield Product_1.default.find({ sex, categoryId: category, subcategoryId: subcategory });
+            if (!(products === null || products === void 0 ? void 0 : products.length))
+                res.status(404);
+            res.json({ products });
+        });
+    }
+    static bySlug(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { slug } = req.params;
+            const product = yield Product_1.default.findOne({ slug });
+            if (!product)
+                return res.status(404).json({ error: "Product not found." });
+            res.json({ product });
         });
     }
 }

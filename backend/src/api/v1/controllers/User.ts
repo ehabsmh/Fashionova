@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
 import ErrorHandler from '../../../utils/ErrorHandler';
+import CartItem from '../../../models/CartItem';
 
 
 class UserController {
@@ -143,6 +144,56 @@ class UserController {
 
       if (e instanceof Error)
         res.status(500).json({ error: e.message })
+    }
+  }
+
+  static async addToCart(req: Request, res: Response) {
+    try {
+      const { productId, variant, quantity } = req.body;
+      const user = (req as any).user;
+
+      if (!quantity) throw new ErrorHandler("Add item's quantity.", 400);
+
+      if (!('color' in variant) && !('size' in variant)) {
+        throw new ErrorHandler("Variant must have color and size.", 400);
+      }
+
+      const cartItem = await CartItem.create({ productId, variant, quantity });
+      await User.findByIdAndUpdate(user._id, { $push: { cart: cartItem } });
+
+      res.json({ message: "Item added to cart.", cartItem });
+
+    } catch (e) {
+      if (e instanceof ErrorHandler && e.name === "ErrorHandler") {
+        return res.status(e.statusCode).json({ error: e.message });
+      }
+
+      if (e instanceof Error)
+        res.status(500).json({ error: e.message })
+    }
+  }
+
+  static async deleteFromCart(req: Request, res: Response) {
+    const { cartItemId } = req.params;
+    const userId = (req as any).user._id;
+
+    try {
+      const user = await User.findById(userId);
+      if (!user) throw new ErrorHandler("User not found.", 404);
+      const cartItem = user.cart.find((cartItem) => cartItem._id.toString() === cartItemId);
+      if (!cartItem) throw new ErrorHandler("Item not found in the cart.", 404);
+
+      await CartItem.findByIdAndDelete(cartItem._id);
+      await user?.updateOne({ $pull: { cart: cartItem._id } })
+
+      res.json({ message: "Item deleted from cart." });
+
+    } catch (e) {
+      if (e instanceof ErrorHandler && e.name === "ErrorHandler") {
+        return res.status(e.statusCode).json({ error: e.message });
+      }
+
+      if (e instanceof Error) return res.status(500).json({ error: e.message })
     }
   }
 }

@@ -23,7 +23,7 @@ const UserSchema = new mongoose_1.Schema({
     image: { type: String, default: "no image" },
     verificationCode: { type: String, default: crypto_1.default.randomInt(100000, 999999).toString() },
     verificationCodeExpire: { type: Number, default: Date.now() + 30 * 60 * 1000 },
-    cart: [{ type: mongoose_1.Types.ObjectId, ref: "cartItem" }]
+    cart: [{ type: mongoose_1.Types.ObjectId, ref: "CartItem" }]
 }, {
     timestamps: true
 });
