@@ -41,7 +41,10 @@ const UserSchema = new Schema<UserDocument>({
     image: { type: String, default: "no image" },
     verificationCode: { type: String, default: crypto.randomInt(100000, 999999).toString() },
     verificationCodeExpire: { type: Number, default: Date.now() + 30 * 60 * 1000 },
-    cart: [{ type: Types.ObjectId, ref: "CartItem" }]
+    cart: {
+        item: [{ type: Types.ObjectId, ref: "CartItem" }],
+        totalPrice: { type: Number, default: 0 }
+    }
 }, {
     timestamps: true
 })

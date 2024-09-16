@@ -150,7 +150,7 @@ class UserController {
   static async addToCart(req: Request, res: Response) {
     try {
       const { productId, variant, quantity } = req.body;
-      const user = (req as any).user;
+      const userId = (req as any).user._id;
 
       if (!quantity) throw new ErrorHandler("Add item's quantity.", 400);
 
@@ -159,7 +159,9 @@ class UserController {
       }
 
       const cartItem = await CartItem.create({ productId, variant, quantity });
-      await User.findByIdAndUpdate(user._id, { $push: { cart: cartItem } });
+      const user = await User.findByIdAndUpdate(userId, { $push: { 'cart.item': cartItem }, $inc: { 'cart.totalPrice': cartItem.price } }, { new: true });
+      if (!user) throw new ErrorHandler("User not found.", 404);
+
 
       res.json({ message: "Item added to cart.", cartItem });
 

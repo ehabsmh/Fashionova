@@ -154,14 +154,16 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { productId, variant, quantity } = req.body;
-                const user = req.user;
+                const userId = req.user._id;
                 if (!quantity)
                     throw new ErrorHandler_1.default("Add item's quantity.", 400);
                 if (!('color' in variant) && !('size' in variant)) {
                     throw new ErrorHandler_1.default("Variant must have color and size.", 400);
                 }
                 const cartItem = yield CartItem_1.default.create({ productId, variant, quantity });
-                yield User_1.default.findByIdAndUpdate(user._id, { $push: { cart: cartItem } });
+                const user = yield User_1.default.findByIdAndUpdate(userId, { $push: { 'cart.item': cartItem }, $inc: { 'cart.totalPrice': cartItem.price } }, { new: true });
+                if (!user)
+                    throw new ErrorHandler_1.default("User not found.", 404);
                 res.json({ message: "Item added to cart.", cartItem });
             }
             catch (e) {
