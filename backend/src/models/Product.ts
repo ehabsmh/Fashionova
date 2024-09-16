@@ -1,6 +1,6 @@
-import { Schema, Types, model } from "mongoose";
+import { Schema, model } from "mongoose";
 import ErrorHandler from "../utils/ErrorHandler";
-import { VariantInterface } from "../interfaces/Product";
+import IProduct, { IVariant } from "../interfaces/Product";
 
 type Size = {
   size: string;
@@ -16,8 +16,8 @@ const SizeSchema = new Schema({
   discountPrice: { type: Number, required: true },
 }, { _id: false });
 
-export const VariantSchema = new Schema({
-  color: { type: String, required: true, lowercase: true, unique: true },
+export const VariantSchema = new Schema<IVariant>({
+  color: { type: String, required: true, lowercase: true },
   colorCode: { type: String, required: true },
   images: [{ type: String, default: 'no image' }],
   sizes: {
@@ -34,13 +34,13 @@ export const VariantSchema = new Schema({
 }, { _id: false });
 
 
-const ProductSchema = new Schema({
+export const ProductSchema = new Schema<IProduct>({
   name: { type: String, required: true, unique: true },
   shortDesc: { type: String, required: true },
   longDesc: { type: String },
   sex: { type: String, enum: ['male', 'female'] },
-  categoryId: { type: Types.ObjectId, ref: "Category", required: true },
-  subcategoryId: { type: Types.ObjectId, ref: "Subcategory", required: true },
+  categoryId: { type: Schema.Types.ObjectId, ref: "Category", required: true },
+  subcategoryId: { type: Schema.Types.ObjectId, ref: "Subcategory", required: true },
   slug: {
     type: String, trim: true, lowercase: true,
     set: (v: string) =>
@@ -51,11 +51,12 @@ const ProductSchema = new Schema({
 }, { timestamps: true })
 
 ProductSchema.pre("findOneAndUpdate", async function (next) {
-  console.log("xx");
-  this._update.variants.forEach((variant: VariantInterface) => {
-    const sizeSet = new Set(variant.sizes.map(s => s.size));
-    if (sizeSet.size !== variant.sizes.length) throw new ErrorHandler("Sizes must be unique for each color variant.", 400);
-  })
+  if (this._update.variants) {
+    this._update.variants.forEach((variant: IVariant) => {
+      const sizeSet = new Set(variant.sizes.map(s => s.size));
+      if (sizeSet.size !== variant.sizes.length) throw new ErrorHandler("Sizes must be unique for each color variant.", 400);
+    })
+  }
   next();
 })
 

@@ -23,7 +23,7 @@ interface UserDocument extends Document {
     isVerificationCodeExpired: () => boolean;
     fullName?: string;
 }
-const UserSchema = new Schema({
+const UserSchema = new Schema<UserDocument>({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true, lowercase: true },

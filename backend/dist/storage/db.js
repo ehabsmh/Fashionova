@@ -17,6 +17,7 @@ const User_1 = __importDefault(require("../models/User"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const user_1 = require("../utils/user");
 const ErrorHandler_1 = __importDefault(require("../utils/ErrorHandler"));
+const uploadFile_1 = require("../Services/uploadFile");
 class DB {
     constructor() {
         /* connect to the database */
@@ -52,6 +53,7 @@ class DB {
         });
     }
     checkVariantsColorUniqueness(variants) {
+        console.log("xx");
         if (!variants.length)
             throw new ErrorHandler_1.default("Variants cannot be empty.", 400);
         variants.forEach((variant, i) => {
@@ -60,6 +62,25 @@ class DB {
                 throw new ErrorHandler_1.default(`Color ${variant.color} is duplicated.`, 409);
         });
         return true;
+    }
+    addImagesToProduct(files, product) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // If req.files is an array (which it is when using upload.any())
+            if (files && Array.isArray(files)) {
+                for (const file of files) {
+                    // Destructure the field name, index, and property name
+                    const [field, indexString, propertyName] = file.fieldname.split("-");
+                    const index = Number(indexString);
+                    // Ensure that the fieldname is correct before proceeding
+                    if (field === "variants" && propertyName === "images") {
+                        // Upload image to cloud storage
+                        const url = yield (0, uploadFile_1.uploadFileToCloud)(file.path, 'products', 350, 350);
+                        // Push the image URL to the corresponding variant's images array
+                        product.variants[index].images.push(url);
+                    }
+                }
+            }
+        });
     }
 }
 exports.default = DB;

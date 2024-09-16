@@ -16,14 +16,14 @@ exports.uploadFileToCloud = void 0;
 const multer_1 = __importDefault(require("multer"));
 const uuid_1 = require("uuid");
 const cloudinaryConfig_1 = __importDefault(require("./cloudinaryConfig"));
-let publicId = '';
+// let publicId = '';
 const storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './backend/tmp/uploads/');
     },
     filename: function (req, file, cb) {
-        publicId = (0, uuid_1.v4)();
-        cb(null, publicId);
+        // publicId = uuid4();
+        cb(null, (0, uuid_1.v4)());
     }
 });
 function fileFilter(req, file, cb) {
@@ -37,12 +37,12 @@ function fileFilter(req, file, cb) {
             cb(new Error('Only images supported.'), false);
     });
 }
-const uploadFileToCloud = (imagePath, folder) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield cloudinaryConfig_1.default.uploader.upload(imagePath, { folder, public_id: publicId });
+const uploadFileToCloud = (imagePath_1, folder_1, ...args_1) => __awaiter(void 0, [imagePath_1, folder_1, ...args_1], void 0, function* (imagePath, folder, width = 200, height = 200) {
+    const result = yield cloudinaryConfig_1.default.uploader.upload(imagePath, { folder });
     const url = cloudinaryConfig_1.default.url(result.public_id, {
         transformation: [
             { quality: 'auto', fetch_format: 'auto' },
-            { width: 200, height: 200, crop: 'fill', gravity: 'auto' }
+            { width, height, crop: 'fill', gravity: 'auto' }
         ]
     });
     return url;

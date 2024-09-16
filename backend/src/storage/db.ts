@@ -1,11 +1,11 @@
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 import UserInterface from '../interfaces/User';
 import User from "../models/User";
 import bcrypt from "bcrypt";
 import { addCountryCode } from "../utils/user";
 import ErrorHandler from "../utils/ErrorHandler";
-import { VariantSchema } from "../models/Product";
-import { VariantInterface } from "../interfaces/Product";
+import ProductInterface, { IVariant } from "../interfaces/Product";
+import { uploadFileToCloud } from "../Services/uploadFile";
 
 class DB {
   constructor() {
@@ -44,26 +44,37 @@ class DB {
     return new User(reqBody);
   }
 
-  checkVariantsColorUniqueness(variants: VariantInterface[] | any) {
+  checkVariantsColorUniqueness(variants: IVariant[] | any) {
+    console.log("xx");
     if (!variants.length) throw new ErrorHandler("Variants cannot be empty.", 400);
-    variants.forEach((variant: VariantInterface, i: number) => {
-      const colors = variants.slice(i + 1).filter((v: VariantInterface) => variant.color.toLowerCase() === v.color.toLowerCase());
+    variants.forEach((variant: IVariant, i: number) => {
+      const colors = variants.slice(i + 1).filter((v: IVariant) => variant.color.toLowerCase() === v.color.toLowerCase());
 
       if (colors.length >= 1) throw new ErrorHandler(`Color ${variant.color} is duplicated.`, 409);
-
     });
 
     return true;
   }
 
+  async addImagesToProduct(files: Express.Multer.File[], product: ProductInterface) {
+    // If req.files is an array (which it is when using upload.any())
+    if (files && Array.isArray(files)) {
+      for (const file of files) {
+        // Destructure the field name, index, and property name
+        const [field, indexString, propertyName] = file.fieldname.split("-");
+        const index = Number(indexString);
 
-  // async addVariants(variants: typeof VariantSchema[], productId: Types.ObjectId) {
-  //   if (!variants.length) throw new ErrorHandler("Variants cannot be empty.", 400);
+        // Ensure that the fieldname is correct before proceeding
+        if (field === "variants" && propertyName === "images") {
+          // Upload image to cloud storage
+          const url = await uploadFileToCloud(file.path, 'products', 350, 350);
 
-  //   variants.forEach(async (variant) => {
-  //     await Variant.create({ productId, ...variant });
-  //   })
-  // }
+          // Push the image URL to the corresponding variant's images array
+          product.variants[index].images.push(url);
+        }
+      }
+    }
+  }
 }
 
 export default DB;

@@ -3,15 +3,15 @@ import { v4 as uuid4 } from "uuid"
 import { Request } from "express";
 import cloudinary from "./cloudinaryConfig";
 
-let publicId = '';
+// let publicId = '';
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './backend/tmp/uploads/');
     },
     filename: function (req, file, cb) {
-        publicId = uuid4();
-        cb(null, publicId);
+        // publicId = uuid4();
+        cb(null, uuid4());
     }
 })
 
@@ -23,12 +23,12 @@ async function fileFilter(req: Request, file: { mimetype: string; }, cb: <T> (ar
     else cb<Error>(new Error('Only images supported.'), false)
 }
 
-export const uploadFileToCloud = async (imagePath: string, folder: string) => {
-    const result = await cloudinary.uploader.upload(imagePath, { folder, public_id: publicId });
+export const uploadFileToCloud = async (imagePath: string, folder: string, width: number = 200, height: number = 200) => {
+    const result = await cloudinary.uploader.upload(imagePath, { folder });
     const url = cloudinary.url(result.public_id, {
         transformation: [
             { quality: 'auto', fetch_format: 'auto' },
-            { width: 200, height: 200, crop: 'fill', gravity: 'auto' }
+            { width, height, crop: 'fill', gravity: 'auto' }
         ]
     });
 
