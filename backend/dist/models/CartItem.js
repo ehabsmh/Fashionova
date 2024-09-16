@@ -22,6 +22,7 @@ const CartItemSchema = new mongoose_1.Schema({
         size: { type: String }
     },
     quantity: { type: Number, required: true },
+    price: { type: Number, default: 0 }
 });
 CartItemSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -37,6 +38,12 @@ CartItemSchema.pre("save", function (next) {
             throw new ErrorHandler_1.default("Size not found.", 404);
         if (size.quantity < cartItem.quantity)
             throw new ErrorHandler_1.default("Not enough quantity.", 400);
+        if (size.discountPrice < size.price) {
+            this.price = size.discountPrice * this.quantity;
+        }
+        else {
+            this.price = size.price * this.quantity;
+        }
         next();
     });
 });
