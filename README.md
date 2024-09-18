@@ -42,9 +42,9 @@ Upcoming features (v2):
 
 All files and folders will be organized within the src folder.
 
-- api/v1:
+- **[api/v1:](https://github.com/ehabsmh/Fashionova/tree/main/backend/src/api/v1)**
 
-  - /Controllers
+  - **[/Controllers]**
     Contains the business logic for each endpoint.
 
   - /views
