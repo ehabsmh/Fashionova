@@ -4,7 +4,7 @@ Welcome to Fashionova, an innovative e-commerce platform designed for seamless s
 
 ## API Documentation
 
-[](https://documenter.getpostman.com/view/25562679/2sAXqqePFj#intro)
+https://documenter.getpostman.com/view/25562679/2sAXqqePFj#intro
 
 ## Overview
 
