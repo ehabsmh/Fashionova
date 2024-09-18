@@ -13,6 +13,7 @@ const categories_1 = __importDefault(require("./views/categories"));
 const auth_1 = require("./middlewares/auth");
 const subcategories_1 = __importDefault(require("./views/subcategories"));
 const products_1 = __importDefault(require("./views/products"));
+const orders_1 = __importDefault(require("./views/orders"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 exports.db = new db_1.default();
@@ -22,6 +23,7 @@ app.use("/api/v1/", users_1.default);
 app.use("/api/v1/", auth_1.auth, categories_1.default);
 app.use("/api/v1/", auth_1.auth, subcategories_1.default);
 app.use("/api/v1/", auth_1.auth, products_1.default);
+app.use("/api/v1/", auth_1.auth, orders_1.default);
 app.get('/', (req, res) => {
     res.send("Welcome to Fashionova server.");
 });

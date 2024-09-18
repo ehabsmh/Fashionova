@@ -19,7 +19,10 @@ interface UserDocument extends Document {
     image: string;
     verificationCode?: string;
     verificationCodeExpire?: number;
-    cart: Types.ObjectId[];
+    cart: {
+        items: Types.ObjectId[];
+        totalPrice: number;
+    };
     isVerificationCodeExpired: () => boolean;
     fullName?: string;
 }
@@ -42,7 +45,7 @@ const UserSchema = new Schema<UserDocument>({
     verificationCode: { type: String, default: crypto.randomInt(100000, 999999).toString() },
     verificationCodeExpire: { type: Number, default: Date.now() + 30 * 60 * 1000 },
     cart: {
-        item: [{ type: Types.ObjectId, ref: "CartItem" }],
+        items: [{ type: Types.ObjectId, ref: "CartItem" }],
         totalPrice: { type: Number, default: 0 }
     }
 }, {

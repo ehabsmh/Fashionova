@@ -1,8 +1,9 @@
 import { model, Schema, Types } from "mongoose";
 import ErrorHandler from "../utils/ErrorHandler";
 import Product from "./Product";
+import User from "./User";
 
-interface ICartItem {
+export interface ICartItem {
     productId: Types.ObjectId;
     variant: {
         color: string;
@@ -16,7 +17,7 @@ const CartItemSchema = new Schema<ICartItem>({
     productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     variant: {
         color: { type: String },
-        size: { type: String }
+        size: { type: String },
     },
     quantity: { type: Number, required: true },
     price: { type: Number, default: 0 }

@@ -13,4 +13,5 @@ userRouter.put('/auth/resendCode', User_1.default.resendCode);
 userRouter.post('/auth/login', User_1.default.login);
 userRouter.post('/user/addToCart', auth_1.auth, User_1.default.addToCart);
 userRouter.delete('/user/deleteFromCart/:cartItemId', auth_1.auth, User_1.default.deleteFromCart);
+userRouter.get('/user/getCart', auth_1.auth, User_1.default.getCart);
 exports.default = userRouter;

@@ -13,6 +13,7 @@ class DB {
     const HOST = process.env.DB_HOST || "127.0.0.1";
     const PORT = process.env.DB_PORT || "27017";
     const DB_NAME = process.env.DB_NAME || "fashionova";
+
     mongoose.connect(`mongodb://${HOST}:${PORT}/${DB_NAME}`).then(() => {
       console.log("Database connected.");
     }).catch(() => { console.log("Failed to connect to the database."); })

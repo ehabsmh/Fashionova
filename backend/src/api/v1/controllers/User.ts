@@ -158,9 +158,18 @@ class UserController {
         throw new ErrorHandler("Variant must have color and size.", 400);
       }
 
-      const cartItem = await CartItem.create({ productId, variant, quantity });
-      const user = await User.findByIdAndUpdate(userId, { $push: { 'cart.item': cartItem }, $inc: { 'cart.totalPrice': cartItem.price } }, { new: true });
+      const user = await User.findById(userId).populate("cart.items");
       if (!user) throw new ErrorHandler("User not found.", 404);
+
+      for (const itemId of user.cart.items) {
+        const item = await CartItem.findById(itemId);
+        if (item?.productId.toString() === productId && item?.variant.color === variant.color && item?.variant.size === variant.size) {
+          throw new ErrorHandler("Item already in the cart.", 409);
+        }
+      }
+
+      const cartItem = await CartItem.create({ productId, variant, quantity });
+      await user.updateOne({ $push: { 'cart.items': cartItem }, $inc: { 'cart.totalPrice': cartItem.price } });
 
 
       res.json({ message: "Item added to cart.", cartItem });
@@ -182,13 +191,32 @@ class UserController {
     try {
       const user = await User.findById(userId);
       if (!user) throw new ErrorHandler("User not found.", 404);
-      const cartItem = user.cart.find((cartItem) => cartItem._id.toString() === cartItemId);
+
+      const cartItem = await CartItem.findById(cartItemId);
       if (!cartItem) throw new ErrorHandler("Item not found in the cart.", 404);
 
-      await CartItem.findByIdAndDelete(cartItem._id);
-      await user?.updateOne({ $pull: { cart: cartItem._id } })
+      await user?.updateOne({ $pull: { 'cart.items': cartItemId }, $inc: { 'cart.totalPrice': -cartItem.price } })
+      await cartItem.deleteOne({ _id: cartItemId });
 
       res.json({ message: "Item deleted from cart." });
+
+    } catch (e) {
+      if (e instanceof ErrorHandler && e.name === "ErrorHandler") {
+        return res.status(e.statusCode).json({ error: e.message });
+      }
+
+      if (e instanceof Error) return res.status(500).json({ error: e.message })
+    }
+
+  }
+  static async getCart(req: Request, res: Response) {
+    const userId = (req as any).user._id;
+
+    try {
+      const user = await User.findById(userId).populate("cart.items").populate("cart.items.productId");
+      if (!user) throw new ErrorHandler("User not found.", 404);
+
+      res.json(user.cart);
 
     } catch (e) {
       if (e instanceof ErrorHandler && e.name === "ErrorHandler") {

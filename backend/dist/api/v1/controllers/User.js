@@ -160,10 +160,17 @@ class UserController {
                 if (!('color' in variant) && !('size' in variant)) {
                     throw new ErrorHandler_1.default("Variant must have color and size.", 400);
                 }
-                const cartItem = yield CartItem_1.default.create({ productId, variant, quantity });
-                const user = yield User_1.default.findByIdAndUpdate(userId, { $push: { 'cart.item': cartItem }, $inc: { 'cart.totalPrice': cartItem.price } }, { new: true });
+                const user = yield User_1.default.findById(userId).populate("cart.items");
                 if (!user)
                     throw new ErrorHandler_1.default("User not found.", 404);
+                for (const itemId of user.cart.items) {
+                    const item = yield CartItem_1.default.findById(itemId);
+                    if ((item === null || item === void 0 ? void 0 : item.productId.toString()) === productId && (item === null || item === void 0 ? void 0 : item.variant.color) === variant.color && (item === null || item === void 0 ? void 0 : item.variant.size) === variant.size) {
+                        throw new ErrorHandler_1.default("Item already in the cart.", 409);
+                    }
+                }
+                const cartItem = yield CartItem_1.default.create({ productId, variant, quantity });
+                yield user.updateOne({ $push: { 'cart.items': cartItem }, $inc: { 'cart.totalPrice': cartItem.price } });
                 res.json({ message: "Item added to cart.", cartItem });
             }
             catch (e) {
@@ -183,12 +190,30 @@ class UserController {
                 const user = yield User_1.default.findById(userId);
                 if (!user)
                     throw new ErrorHandler_1.default("User not found.", 404);
-                const cartItem = user.cart.find((cartItem) => cartItem._id.toString() === cartItemId);
+                const cartItem = yield CartItem_1.default.findById(cartItemId);
                 if (!cartItem)
                     throw new ErrorHandler_1.default("Item not found in the cart.", 404);
-                yield CartItem_1.default.findByIdAndDelete(cartItem._id);
-                yield (user === null || user === void 0 ? void 0 : user.updateOne({ $pull: { cart: cartItem._id } }));
+                yield (user === null || user === void 0 ? void 0 : user.updateOne({ $pull: { 'cart.items': cartItemId }, $inc: { 'cart.totalPrice': -cartItem.price } }));
+                yield cartItem.deleteOne({ _id: cartItemId });
                 res.json({ message: "Item deleted from cart." });
+            }
+            catch (e) {
+                if (e instanceof ErrorHandler_1.default && e.name === "ErrorHandler") {
+                    return res.status(e.statusCode).json({ error: e.message });
+                }
+                if (e instanceof Error)
+                    return res.status(500).json({ error: e.message });
+            }
+        });
+    }
+    static getCart(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userId = req.user._id;
+            try {
+                const user = yield User_1.default.findById(userId).populate("cart.items").populate("cart.items.productId");
+                if (!user)
+                    throw new ErrorHandler_1.default("User not found.", 404);
+                res.json(user.cart);
             }
             catch (e) {
                 if (e instanceof ErrorHandler_1.default && e.name === "ErrorHandler") {

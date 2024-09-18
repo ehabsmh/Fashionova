@@ -24,7 +24,7 @@ const UserSchema = new mongoose_1.Schema({
     verificationCode: { type: String, default: crypto_1.default.randomInt(100000, 999999).toString() },
     verificationCodeExpire: { type: Number, default: Date.now() + 30 * 60 * 1000 },
     cart: {
-        item: [{ type: mongoose_1.Types.ObjectId, ref: "CartItem" }],
+        items: [{ type: mongoose_1.Types.ObjectId, ref: "CartItem" }],
         totalPrice: { type: Number, default: 0 }
     }
 }, {
