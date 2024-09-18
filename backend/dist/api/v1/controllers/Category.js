@@ -25,7 +25,6 @@ class CategoryController {
             const image = req.file;
             try {
                 const imagePath = image === null || image === void 0 ? void 0 : image.path;
-                console.log(name, sex, imagePath);
                 const category = yield Category_1.default.findOne({ name: name.toLowerCase(), sex: sex.toLowerCase() });
                 if (category)
                     throw new ErrorHandler_1.default(`${name} Category for ${sex} is already exists.`, 409);

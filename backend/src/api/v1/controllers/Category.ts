@@ -14,7 +14,6 @@ export default class CategoryController {
 
     try {
       const imagePath = image?.path;
-      console.log(name, sex, imagePath);
 
       const category = await Category.findOne({ name: name.toLowerCase(), sex: sex.toLowerCase() });
       if (category) throw new ErrorHandler(`${name} Category for ${sex} is already exists.`, 409);

@@ -53,7 +53,6 @@ class DB {
         });
     }
     checkVariantsColorUniqueness(variants) {
-        console.log("xx");
         if (!variants.length)
             throw new ErrorHandler_1.default("Variants cannot be empty.", 400);
         variants.forEach((variant, i) => {

@@ -46,7 +46,6 @@ class DB {
   }
 
   checkVariantsColorUniqueness(variants: IVariant[] | any) {
-    console.log("xx");
     if (!variants.length) throw new ErrorHandler("Variants cannot be empty.", 400);
     variants.forEach((variant: IVariant, i: number) => {
       const colors = variants.slice(i + 1).filter((v: IVariant) => variant.color.toLowerCase() === v.color.toLowerCase());
