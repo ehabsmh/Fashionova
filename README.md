@@ -32,15 +32,15 @@ create your own trademark. Platform for users to create and sell their own merch
 
 - Create an account to save preferences and order history.
 
-Upcoming features (v2):
+  **Upcoming features (v2):**
 
-- Filter clothes by price, color, size, top-rated, or top sellers(version 2.0.0) for a personalized shopping experience.
+  - Filter clothes by price, color, size, top-rated, or top sellers(version 2.0.0) for a personalized shopping experience.
 
-- Rate and review products to share my experience with others.
+  - Rate and review products to share my experience with others.
 
-- receive personalized recommendations based on my browsing and purchase History.
+  - receive personalized recommendations based on my browsing and purchase History.
 
-- Add products to wishlist for future purchase consideration.
+  - Add products to wishlist for future purchase consideration.
 
 ## Folder and File Structure
 
