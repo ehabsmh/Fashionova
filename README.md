@@ -82,6 +82,6 @@ All files and folders will be organized within the src folder.
 
 ## Learning objectives
 
-- Strengthening my proficiency and confidence in using ExpressJS along with the Mongoose ODM for database operations.
-- Deepening my understanding and mastery of TypeScript, particularly in backend development.
-- Enhancing the overall structure and maintainability of my project by integrating best practices in both ExpressJS and TypeScript.
+- Strengthening my proficiency and confidence in using `ExpressJS` along with the `Mongoose ODM` for database operations.
+- Deepening my understanding and mastery of `TypeScript`, particularly in backend development.
+- Enhancing the overall structure and maintainability of my project by integrating best practices in both `ExpressJS` and `TypeScript`.
