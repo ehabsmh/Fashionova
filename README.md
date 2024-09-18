@@ -72,7 +72,7 @@ All files and folders will be organized within the src folder.
 - ExpressJS
 - Mongoose ODM
 
-# Third Services
+## Third Services
 
 - `Multer` for handling file uploads
 - `Cloudinary` to upload files to cloud.
