@@ -44,20 +44,20 @@ All files and folders will be organized within the src folder.
 
 - **[api/v1:](https://github.com/ehabsmh/Fashionova/tree/main/backend/src/api/v1)**
 
-  - **[/Controllers]**
+  - **[/Controllers](https://github.com/ehabsmh/Fashionova/tree/main/backend/src/api/v1/controllers)**
     Contains the business logic for each endpoint.
 
-  - /views
+  - **[/views](https://github.com/ehabsmh/Fashionova/tree/main/backend/src/api/v1/views)**
     Stores the endpoint definitions.
 
-  - /middlewares
+  - **[/middlewares](https://github.com/ehabsmh/Fashionova/tree/main/backend/src/api/v1/middlewares)**
     Includes auth.ts, responsible for verifying user tokens.
 
-- models:
+- **[models:](https://github.com/ehabsmh/Fashionova/tree/main/backend/src/models)**
   Defines the database schemas and models.
 
-- Storage:
+- **[Storage:](https://github.com/ehabsmh/Fashionova/tree/main/backend/src/storage)**
   Manages the connection to the MongoDB server.
 
-- utils:
+- **[utils:](https://github.com/ehabsmh/Fashionova/tree/main/backend/src/utils)**
   Contains utility functions used in business logic.
