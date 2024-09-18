@@ -65,3 +65,17 @@ All files and folders will be organized within the src folder.
 
 - **[utils:](https://github.com/ehabsmh/Fashionova/tree/main/backend/src/utils)**
   Contains utility functions used in business logic.
+
+## Technologies
+
+- Typescript
+- ExpressJS
+- Mongoose ODM
+
+# Third Services
+
+- `Multer` for handling file uploads
+- `Cloudinary` to upload files to cloud.
+- `nodemailer` for sending emails.
+- `bcrypt` to encrypt password.
+- `jsonwebtoken` to handle authentication and authorization mechanisms.
