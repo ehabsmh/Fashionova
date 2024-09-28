@@ -1,10 +1,10 @@
 {
   "name": "fashionova",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "innovative e-commerce platform designed for seamless shopping and efficient product management.",
-  "main": "backend/dist/api/v1/index.js",
+  "main": "backend/dist/api/v2/index.js",
   "scripts": {
-    "start-server": "nodemon backend/dist/api/v1/index.js",
+    "start-server": "nodemon backend/dist/api/v2/index.js",
     "test": "jest"
   },
   "repository": {
