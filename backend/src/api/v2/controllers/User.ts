@@ -7,6 +7,8 @@ import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
 import ErrorHandler from '../../../utils/ErrorHandler';
 import CartItem from '../../../models/CartItem';
+import Product from '../../../models/Product';
+import { Types } from 'mongoose';
 
 
 class UserController {
@@ -168,6 +170,11 @@ class UserController {
         }
       }
 
+      const product = await Product.findById(productId);
+      const productVariant = product?.variants.find(v => v.color === variant.color);
+
+      variant.image = productVariant?.images[0];
+
       const cartItem = await CartItem.create({ productId, variant, quantity });
       await user.updateOne({ $push: { 'cart.items': cartItem }, $inc: { 'cart.totalPrice': cartItem.price } });
 
@@ -193,7 +200,10 @@ class UserController {
       if (!user) throw new ErrorHandler("User not found.", 404);
 
       const cartItem = await CartItem.findById(cartItemId);
-      if (!cartItem) throw new ErrorHandler("Item not found in the cart.", 404);
+      const cartItemObjId = new Types.ObjectId(cartItemId);
+      if (!cartItem || !user.cart.items.includes(cartItemObjId)) {
+        throw new ErrorHandler("Item not found in the cart.", 404);
+      }
 
       await user?.updateOne({ $pull: { 'cart.items': cartItemId }, $inc: { 'cart.totalPrice': -cartItem.price } })
       await cartItem.deleteOne({ _id: cartItemId });

@@ -20,6 +20,8 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const ErrorHandler_1 = __importDefault(require("../../../utils/ErrorHandler"));
 const CartItem_1 = __importDefault(require("../../../models/CartItem"));
+const Product_1 = __importDefault(require("../../../models/Product"));
+const mongoose_1 = require("mongoose");
 class UserController {
     static register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -169,6 +171,9 @@ class UserController {
                         throw new ErrorHandler_1.default("Item already in the cart.", 409);
                     }
                 }
+                const product = yield Product_1.default.findById(productId);
+                const productVariant = product === null || product === void 0 ? void 0 : product.variants.find(v => v.color === variant.color);
+                variant.image = productVariant === null || productVariant === void 0 ? void 0 : productVariant.images[0];
                 const cartItem = yield CartItem_1.default.create({ productId, variant, quantity });
                 yield user.updateOne({ $push: { 'cart.items': cartItem }, $inc: { 'cart.totalPrice': cartItem.price } });
                 res.json({ message: "Item added to cart.", cartItem });
@@ -191,8 +196,10 @@ class UserController {
                 if (!user)
                     throw new ErrorHandler_1.default("User not found.", 404);
                 const cartItem = yield CartItem_1.default.findById(cartItemId);
-                if (!cartItem)
+                const cartItemObjId = new mongoose_1.Types.ObjectId(cartItemId);
+                if (!cartItem || !user.cart.items.includes(cartItemObjId)) {
                     throw new ErrorHandler_1.default("Item not found in the cart.", 404);
+                }
                 yield (user === null || user === void 0 ? void 0 : user.updateOne({ $pull: { 'cart.items': cartItemId }, $inc: { 'cart.totalPrice': -cartItem.price } }));
                 yield cartItem.deleteOne({ _id: cartItemId });
                 res.json({ message: "Item deleted from cart." });

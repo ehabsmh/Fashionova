@@ -8,6 +8,7 @@ export interface ICartItem {
     variant: {
         color: string;
         size: string;
+        image: string;
     };
     quantity: number;
     price: number;
@@ -18,6 +19,7 @@ const CartItemSchema = new Schema<ICartItem>({
     variant: {
         color: { type: String },
         size: { type: String },
+        image: { type: String }
     },
     quantity: { type: Number, required: true },
     price: { type: Number, default: 0 }
