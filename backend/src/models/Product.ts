@@ -51,8 +51,10 @@ export const ProductSchema = new Schema<IProduct>({
 }, { timestamps: true })
 
 ProductSchema.pre("findOneAndUpdate", async function (next) {
-  if (this._update.variants) {
-    this._update.variants.forEach((variant: IVariant) => {
+  const updatedProduct = this._update;
+
+  if (updatedProduct.variants) {
+    updatedProduct.variants.forEach((variant: IVariant) => {
       const sizeSet = new Set(variant.sizes.map(s => s.size));
       if (sizeSet.size !== variant.sizes.length) throw new ErrorHandler("Sizes must be unique for each color variant.", 400);
     })

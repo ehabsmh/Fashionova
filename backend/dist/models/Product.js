@@ -53,8 +53,9 @@ exports.ProductSchema = new mongoose_1.Schema({
 }, { timestamps: true });
 exports.ProductSchema.pre("findOneAndUpdate", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (this._update.variants) {
-            this._update.variants.forEach((variant) => {
+        const updatedProduct = this._update;
+        if (updatedProduct.variants) {
+            updatedProduct.variants.forEach((variant) => {
                 const sizeSet = new Set(variant.sizes.map(s => s.size));
                 if (sizeSet.size !== variant.sizes.length)
                     throw new ErrorHandler_1.default("Sizes must be unique for each color variant.", 400);
