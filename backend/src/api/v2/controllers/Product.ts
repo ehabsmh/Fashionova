@@ -185,7 +185,11 @@ class ProductController {
   }
 
   static async all(req: Request, res: Response) {
-    const products = await Product.find();
+    const page = parseInt(req.query.page as string) || 1;
+    if (page < 1) return res.status(400).json({ error: "Invalid page number." });
+    const limit = 15;
+    const startIndex = (page - 1) * limit;
+    const products = await Product.find().skip(startIndex).limit(limit);
     if (!products.length) res.status(404);
 
     res.json({ products });
