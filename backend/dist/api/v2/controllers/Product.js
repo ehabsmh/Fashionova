@@ -182,7 +182,7 @@ class ProductController {
             const products = yield Product_1.default.find().skip(startIndex).limit(limit);
             if (!products.length)
                 res.status(404);
-            res.json({ products });
+            res.json({ page, products });
         });
     }
     static by(req, res) {

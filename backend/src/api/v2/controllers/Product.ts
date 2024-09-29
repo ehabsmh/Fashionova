@@ -192,7 +192,7 @@ class ProductController {
     const products = await Product.find().skip(startIndex).limit(limit);
     if (!products.length) res.status(404);
 
-    res.json({ products });
+    res.json({ page, products });
   }
 
   static async by(req: Request, res: Response) {
