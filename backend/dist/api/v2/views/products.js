@@ -13,7 +13,7 @@ productsRouter.put('/product/edit/:productId', auth_1.adminAuth, Product_1.defau
 productsRouter.delete('/product/delete/:productId', auth_1.adminAuth, Product_1.default.delete);
 productsRouter.delete('/product/:productId/deleteImage/:imgId', auth_1.adminAuth, Product_1.default.deleteImage);
 productsRouter.post('/product/:productId/addImage', auth_1.adminAuth, uploadFile_1.default.single('image'), Product_1.default.addImage);
-productsRouter.get('/products/all', Product_1.default.all);
+productsRouter.get('/products/', Product_1.default.all);
 productsRouter.get('/products/', Product_1.default.by);
 productsRouter.get('/product/:slug', Product_1.default.bySlug);
 exports.default = productsRouter;
